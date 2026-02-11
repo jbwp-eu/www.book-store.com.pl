@@ -5,9 +5,8 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/index.js --port 3001",
-    "typecheck": "react-router typegen && tsc",
-    "json-server": "json-server data/db.json --port 8000"
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
     "@react-router/node": "7.10.1",
