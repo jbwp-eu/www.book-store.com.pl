@@ -27,7 +27,7 @@ const LatestsPosts = ({ posts, limit = 3 }: LatestPostsProps) => {
               {post.title}
             </h3>
             <p className="text-sm text-gray-300">{post.excerpt}</p>
-            <span>{new Date(post.date).toDateString()}</span>
+            <span suppressHydrationWarning>{new Date(post.date).toDateString()}</span>
           </Link>
         ))}
       </div>

@@ -60,7 +60,7 @@ const ProjectDetailsPage = ({ loaderData }: Route.ComponentProps) => {
           <h1 className="text-3xl font-bold text-blue-400 mb-4">
             {project.title}
           </h1>
-          <p className="text-gray-500 text-sm mb-4">
+          <p className="text-gray-500 text-sm mb-4" suppressHydrationWarning>
             {new Date(project.date).toLocaleDateString()} {project.category}
           </p>
           <p className="text-gray-800 mb-6">{project.description}</p>

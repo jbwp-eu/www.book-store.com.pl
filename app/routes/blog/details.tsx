@@ -44,7 +44,7 @@ const BlogPostDetailsPage = ({ loaderData }: BlogPostDetailsPageProps) => {
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 bg-gray-900">
       <h1 className="text-3xl font-bold text-blue-400 mb-2">{post.title}</h1>
-      <p className="text sm text-gray-400 mb-6">
+      <p className="text sm text-gray-400 mb-6" suppressHydrationWarning>
         {new Date(post.date).toDateString()}
       </p>
 
