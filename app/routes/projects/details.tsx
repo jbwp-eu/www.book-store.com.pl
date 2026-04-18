@@ -2,6 +2,7 @@ import type { Route } from "./+types/details";
 import type { Project, StrapiProject, StrapiResponse } from "~/types";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router";
+import ReactMarkdown from "react-markdown";
 
 const { VITE_API_URL } = import.meta.env;
 
@@ -63,7 +64,7 @@ const ProjectDetailsPage = ({ loaderData }: Route.ComponentProps) => {
           <p className="text-gray-500 text-sm mb-4" suppressHydrationWarning>
             {new Date(project.date).toLocaleDateString()} {project.category}
           </p>
-          <p className="text-gray-800 mb-6">{project.description}</p>
+          <ReactMarkdown>{project.description}</ReactMarkdown>
           <a
             href={project.url}
             className="inline-flex gap-2 items-center text-white bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded transition"
