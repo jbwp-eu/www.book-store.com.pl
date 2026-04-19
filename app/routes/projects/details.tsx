@@ -67,7 +67,7 @@ const ProjectDetailsPage = ({ loaderData }: Route.ComponentProps) => {
           <ReactMarkdown>{project.description}</ReactMarkdown>
           <a
             href={project.url}
-            className="inline-flex gap-2 items-center text-white bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded transition"
+            className="inline-flex gap-2 items-center text-white mt-6 bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded transition"
           >
             View Live Site <FaArrowRight />
           </a>
