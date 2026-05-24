@@ -70,6 +70,7 @@ const AboutPage = () => {
           "VSCode",
           "GitHub Copilot",
           "Cursor",
+          "CI/CD (GitHub Actions)",
         ].map((tech) => (
           <li key={tech} className="bg-gray-700 px-3 py-1 rounded-md">
             {tech}
