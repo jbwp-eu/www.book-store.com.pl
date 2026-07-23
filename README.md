@@ -1,87 +1,85 @@
-# Welcome to React Router!
+# www.book-store.com.pl
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Frontend portfolio / book-store oparty o **React Router 7** (SSR), **Vite**, **Tailwind CSS** i API **Strapi** (`strapi.book-store.com.pl`).
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+## Wymagania
 
-## Features
+- Node.js 20+
+- działające API Strapi (lokalnie lub produkcyjne)
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
-
-## Getting Started
-
-### Installation
-
-Install the dependencies:
+## Start lokalny
 
 ```bash
 npm install
 ```
 
-### Development
+Utwórz plik `.env` w katalogu projektu:
 
-Start the development server with HMR:
+```env
+VITE_API_URL="http://localhost:1337/api"
+```
+
+Dla produkcji Strapi:
+
+```env
+VITE_API_URL="https://strapi.book-store.com.pl/api"
+```
+
+Uruchomienie deweloperskie (HMR):
 
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+Aplikacja: [http://localhost:5173](http://localhost:5173)
 
-## Building for Production
+## Skrypty
 
-Create a production build:
+| Komenda | Opis |
+| --- | --- |
+| `npm run dev` | serwer deweloperski |
+| `npm run build` | build produkcyjny |
+| `npm run start` | serwowanie builda (`react-router-serve`) |
+| `npm run typecheck` | typegen React Router + `tsc` |
+
+## Trasy
+
+| Ścieżka | Opis |
+| --- | --- |
+| `/` | strona główna (wyróżnione projekty + ostatnie posty) |
+| `/about` | o mnie / o projekcie |
+| `/contact` | kontakt |
+| `/projects` | lista projektów |
+| `/projects/:id` | szczegóły projektu |
+| `/blog` | lista postów |
+| `/blog/:slug` | szczegóły posta |
+
+Dane pobierane są z endpointów Strapi: `/projects`, `/posts`.
+
+## Build produkcyjny
 
 ```bash
 npm run build
+npm run start
 ```
 
-## Deployment
+Wyjście builda:
 
-### Docker Deployment
+```
+build/
+├── client/   # assety statyczne
+└── server/   # kod serwera SSR
+```
 
-To build and run using Docker:
+## Docker
 
 ```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
+docker build -t book-store-www .
+docker run -p 3000:3000 book-store-www
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
+Uwaga: `VITE_API_URL` jest wbudowywane na etapie builda Vite. Przy obrazie Dockera ustaw zmienną przed `docker build` (np. `ARG`/`ENV` w Dockerfile) albo zbuduj lokalnie z właściwym `.env`.
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
+## Powiązane repo
 
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+Backend CMS: `strapi.book-store.com.pl` (Strapi + Postgres + Cloudinary).
