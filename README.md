@@ -1,5 +1,7 @@
 # www.book-store.com.pl
 
+**Język:** Polski | [English](README.en.md)
+
 Frontend portfolio / book-store oparty o **React Router 7** (SSR), **Vite**, **Tailwind CSS** i API **Strapi** (`strapi.book-store.com.pl`).
 
 ## Wymagania
