@@ -20,12 +20,13 @@ Workflow: `.github/workflows/deploy-ovh.yml` (ręcznie `workflow_dispatch` na `m
 ## Bootstrap (jednorazowo)
 
 ```bash
-sudo mkdir -p /var/www/www
+sudo mkdir -p /var/www/www/releases
 sudo chown -R ubuntu:ubuntu /var/www/www
 ```
 
 Uruchom na GitHubie workflow **Deploy to OVH VPS** (`Actions` → `Run workflow`, branch **main**).
-Rsync utworzy `/var/www/www/releases/<sha>/`, activate zrobi `npm ci` i symlink `current`.
+Rsync wrzuci release do `/var/www/www/releases/<sha>/` (katalog `releases` musi istnieć wcześniej — powyżej).
+Activate zrobi `npm ci` i symlink `current`.
 Bez jednostki systemd restart jest pomijany (smoke test może paść) — dokończ bootstrap poniżej
 i uruchom workflow **ponownie**.
 

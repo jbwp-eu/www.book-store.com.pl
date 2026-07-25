@@ -56,7 +56,7 @@ jobs:
       - name: Rsync to OVH VPS
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avzr --delete --mkpath
+          switches: -avzr --delete
           path: ${{ env.RELEASE_DIR }}/
           remote_path: /var/www/www/releases/${{ env.RELEASE_SHA }}/ ?
           remote_host: ${{ secrets.OVH_HOST }}
