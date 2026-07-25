@@ -47,7 +47,7 @@ jobs:
           mkdir -p "$RELEASE_DIR/deploy"
           cp package.json package-lock.json "$RELEASE_DIR/"
           cp -r build "$RELEASE_DIR/"
-          cp deploy/activate-release.sh "$RELEASE_DIR/deploy/"
+          cp deploy/activate-release.sh deploy/www-book-store.service.example "$RELEASE_DIR/deploy/"
           chmod +x "$RELEASE_DIR/deploy/activate-release.sh"
 
           echo "RELEASE_DIR=$RELEASE_DIR" >> "$GITHUB_ENV"

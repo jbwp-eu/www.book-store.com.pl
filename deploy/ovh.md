@@ -31,8 +31,10 @@ Bez jednostki systemd restart jest pomijany (smoke test może paść) — dokoń
 i uruchom workflow **ponownie**.
 
 ```bash
-# systemd (plik z repo — skopiuj lokalnie albo z releases/<sha>/deploy/)
-sudo cp deploy/www-book-store.service.example /etc/systemd/system/www-book-store.service
+# systemd — po rsync plik jest w releases/<sha>/deploy/:
+sudo cp /var/www/www/current/deploy/www-book-store.service.example \
+  /etc/systemd/system/www-book-store.service
+# (jeśli current jeszcze nie ma symlinku: użyj pełnej ścieżki releases/<sha>/deploy/...)
 sudo systemctl daemon-reload
 sudo systemctl enable www-book-store
 
