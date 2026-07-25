@@ -82,6 +82,10 @@ docker run -p 3000:3000 book-store-www
 
 Uwaga: `VITE_API_URL` jest wbudowywane na etapie builda Vite. Przy obrazie Dockera ustaw zmienną przed `docker build` (np. `ARG`/`ENV` w Dockerfile) albo zbuduj lokalnie z właściwym `.env`.
 
+## Deploy (OVH)
+
+Produkcja: `https://www.book-store.com.pl` na VPS (`/var/www/www`). Workflow: `.github/workflows/deploy-ovh.yml`. Bootstrap i sekrety: [deploy/ovh.md](deploy/ovh.md).
+
 ## Powiązane repo
 
 Backend CMS: `strapi.book-store.com.pl` (Strapi + Postgres + Cloudinary).

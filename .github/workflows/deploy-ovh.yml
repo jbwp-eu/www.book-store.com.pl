@@ -1,0 +1,80 @@
+# CD: deploy to OVH VPS (manual workflow_dispatch on main).
+# Server bootstrap + klucz deploy: deploy/ovh.md
+# GitHub Secrets: OVH_HOST, OVH_SSH_KEY (private deploy key, bez passphrase)
+# GitHub Variables: OVH_DEPLOY_BASE_URL (https://www.book-store.com.pl), opcjonalnie VITE_API_URL
+name: Deploy to OVH VPS
+
+on:
+  # workflow_run:
+  #   workflows: [CI]
+  #   types: [completed]
+  #   branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ovh
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: >
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    env:
+      OVH_USER: ubuntu
+      OVH_SSH_PORT: "49152"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build and prepare release archive
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+        run: |
+          set -euo pipefail
+          VITE_API_URL="${VITE_API_URL:-https://strapi.book-store.com.pl/api}"
+          RELEASE_DIR="release-${{ github.event.workflow_run.head_sha || github.sha }}"
+
+          npm ci
+          VITE_API_URL="$VITE_API_URL" npm run build
+
+          mkdir -p "$RELEASE_DIR/deploy"
+          cp package.json package-lock.json "$RELEASE_DIR/"
+          cp -r build "$RELEASE_DIR/"
+          cp deploy/activate-release.sh "$RELEASE_DIR/deploy/"
+          chmod +x "$RELEASE_DIR/deploy/activate-release.sh"
+
+          echo "RELEASE_DIR=$RELEASE_DIR" >> "$GITHUB_ENV"
+          echo "RELEASE_SHA=${{ github.event.workflow_run.head_sha || github.sha }}" >> "$GITHUB_ENV"
+
+      - name: Rsync to OVH VPS
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr --delete
+          path: ${{ env.RELEASE_DIR }}/
+          remote_path: /var/www/www/releases/${{ env.RELEASE_SHA }}/
+          remote_host: ${{ secrets.OVH_HOST }}
+          remote_port: ${{ env.OVH_SSH_PORT }}
+          remote_user: ${{ env.OVH_USER }}
+          remote_key: ${{ secrets.OVH_SSH_KEY }}
+
+      - name: Activate release and restart
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.OVH_HOST }}
+          port: ${{ env.OVH_SSH_PORT }}
+          username: ${{ env.OVH_USER }}
+          key: ${{ secrets.OVH_SSH_KEY }}
+          script: |
+            bash /var/www/www/releases/${{ env.RELEASE_SHA }}/deploy/activate-release.sh ${{ env.RELEASE_SHA }}
+
+      - name: Smoke test (public URL)
+        env:
+          DEPLOY_BASE_URL: ${{ vars.OVH_DEPLOY_BASE_URL }}
+        run: bash deploy/smoke-test.sh
