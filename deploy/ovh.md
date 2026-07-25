@@ -36,7 +36,7 @@ sudo cp /var/www/www/current/deploy/www-book-store.service.example \
   /etc/systemd/system/www-book-store.service
 # (jeśli current jeszcze nie ma symlinku: użyj pełnej ścieżki releases/<sha>/deploy/...)
 sudo systemctl daemon-reload
-sudo systemctl enable www-book-store
+sudo systemctl enable --now www-book-store
 
 # sudoers: ubuntu może restartować usługę
 # ubuntu ALL=(ALL) NOPASSWD: /bin/systemctl restart www-book-store
