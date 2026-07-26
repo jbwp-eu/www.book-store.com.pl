@@ -6,11 +6,11 @@ BASE="${DEPLOY_BASE_URL:-https://www.book-store.com.pl}"
 BASE="${BASE%/}"
 
 echo "==> GET $BASE/"
-curl -sfS "$BASE/" | head -c 200 >/dev/null
+curl -sfS -o /dev/null "$BASE/"
 echo " OK"
 
 echo "==> GET $BASE/about"
-curl -sfS "$BASE/about" | head -c 200 >/dev/null
+curl -sfS -o /dev/null "$BASE/about"
 echo " OK"
 
 echo "All smoke checks passed for $BASE"

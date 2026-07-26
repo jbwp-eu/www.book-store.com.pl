@@ -1,0 +1,6 @@
+# Add to nest EC2 Caddyfile (/var/www/nest-book-store/docker/Caddyfile)
+# www container joins Docker network book-store (see deploy/docker/docker-compose.yml)
+
+www.book-store.pl {
+	reverse_proxy www:3000
+}

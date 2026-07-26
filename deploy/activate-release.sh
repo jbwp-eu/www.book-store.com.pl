@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run on OVH VPS as ubuntu after rsync (GitHub Actions CD).
+# Run on the server as ubuntu after rsync (GitHub Actions CD — OVH or EC2).
 set -euo pipefail
 
 APP_ROOT=/var/www/www

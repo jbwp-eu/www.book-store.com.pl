@@ -76,15 +76,16 @@ build/
 ## Docker
 
 ```bash
-docker build -t book-store-www .
-docker run -p 3000:3000 book-store-www
+docker build --build-arg VITE_API_URL=https://strapi.book-store.com.pl/api -t www-book-store .
+docker run --rm -p 3000:3000 www-book-store
 ```
 
-Uwaga: `VITE_API_URL` jest wbudowywane na etapie builda Vite. Przy obrazie Dockera ustaw zmienną przed `docker build` (np. `ARG`/`ENV` w Dockerfile) albo zbuduj lokalnie z właściwym `.env`.
+`VITE_API_URL` jest wbudowywane na etapie `docker build` (`ARG` w Dockerfile).
 
-## Deploy (OVH)
+## Deploy
 
-Produkcja: `https://www.book-store.com.pl` na VPS (`/var/www/www`). Workflow: `.github/workflows/deploy-ovh.yml`. Bootstrap i sekrety: [deploy/ovh.md](deploy/ovh.md).
+- **OVH VPS:** `.github/workflows/deploy-ovh.yml` — systemd + Node — [deploy/ovh.md](deploy/ovh.md)
+- **EC2** (ta sama maszyna co `nest.book-store.pl`): `.github/workflows/deploy-ec2.yml` — build → **Docker Hub** → pull na EC2, sieć `book-store` — [deploy/ec2.md](deploy/ec2.md)
 
 ## Powiązane repo
 

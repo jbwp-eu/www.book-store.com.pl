@@ -1,0 +1,21 @@
+# www.book-store.pl — Docker Compose on the same EC2 as nest (shares network book-store)
+# Layout on server:
+#   /var/www/www/docker/          ← this compose + activate script
+# Network book-store is created by nest compose (must be up first).
+
+services:
+  www:
+    image: ${WWW_IMAGE:-www-book-store:latest}
+    container_name: www
+    environment:
+      NODE_ENV: production
+      HOST: "0.0.0.0"
+      PORT: "3000"
+    networks:
+      - book-store
+    restart: unless-stopped
+
+networks:
+  book-store:
+    external: true
+    name: book-store
