@@ -2,7 +2,7 @@
 
 **Język:** Polski | [English](README.en.md)
 
-Frontend portfolio / book-store oparty o **React Router 7** (SSR), **Vite**, **Tailwind CSS** i API **Strapi** (`strapi.book-store.com.pl`).
+Frontend osobistego portfolio zbudowany w **React 19** i **React Router v7** w trybie framework, z **SSR** przez **Vite** — szybki pierwszy render i lepsze SEO. Napisany w **TypeScript**, stylowany **Tailwind CSS v4**. Treść (projekty i wpisy blogowe) pochodzi z headless CMS **Strapi** (`strapi.book-store.com.pl`); strona obejmuje też sekcje about i contact.
 
 ## Wymagania
 
