@@ -1,0 +1,7 @@
+# SITE_ADDRESS from compose env (see docker-compose.yml).
+# Domain → HTTPS via Let's Encrypt. ":80" → HTTP only.
+
+{$SITE_ADDRESS} {
+	encode gzip
+	reverse_proxy www:3000
+}

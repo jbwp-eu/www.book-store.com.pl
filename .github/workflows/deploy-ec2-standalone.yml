@@ -1,0 +1,94 @@
+# CD: www + Caddy (Docker) on a dedicated test EC2 — no nest.
+# Bootstrap: deploy/ec2-standalone.md
+# Secrets: EC2_STANDALONE_HOST, EC2_STANDALONE_SSH_KEY, DOCKERHUB_USERNAME, DOCKERHUB_TOKEN
+# Variables: EC2_STANDALONE_BASE_URL, EC2_STANDALONE_SITE_ADDRESS,
+#            opcjonalnie VITE_API_URL, DOCKERHUB_IMAGE
+#
+# Build → push to Docker Hub → EC2 docker pull → compose up (caddy + www).
+name: Deploy to EC2 standalone (Docker + Caddy)
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-ec2-standalone
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    env:
+      EC2_USER: ubuntu
+      RELEASE_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image name
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_IMAGE: ${{ vars.DOCKERHUB_IMAGE }}
+        run: |
+          set -euo pipefail
+          USERNAME="${DOCKERHUB_USERNAME:?DOCKERHUB_USERNAME secret is required}"
+          IMAGE="${DOCKERHUB_IMAGE:-${USERNAME}/www-book-store}"
+          echo "WWW_IMAGE=${IMAGE}:${RELEASE_SHA}" >> "$GITHUB_ENV"
+          echo "WWW_IMAGE_LATEST=${IMAGE}:latest" >> "$GITHUB_ENV"
+          echo "Image: ${IMAGE}:${RELEASE_SHA}"
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push www image
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+        run: |
+          set -euo pipefail
+          VITE_API_URL="${VITE_API_URL:-https://strapi.book-store.com.pl/api}"
+          docker build \
+            --build-arg "VITE_API_URL=${VITE_API_URL}" \
+            -t "${WWW_IMAGE}" \
+            -t "${WWW_IMAGE_LATEST}" \
+            -f Dockerfile .
+          docker push "${WWW_IMAGE}"
+          docker push "${WWW_IMAGE_LATEST}"
+
+      - name: Sync Compose + Caddy to EC2
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr --delete
+          path: deploy/docker-standalone/
+          remote_path: /var/www/www-standalone/docker/
+          remote_host: ${{ secrets.EC2_STANDALONE_HOST }}
+          remote_user: ${{ env.EC2_USER }}
+          remote_key: ${{ secrets.EC2_STANDALONE_SSH_KEY }}
+
+      - name: Pull image and activate on EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_STANDALONE_HOST }}
+          username: ${{ env.EC2_USER }}
+          key: ${{ secrets.EC2_STANDALONE_SSH_KEY }}
+          envs: WWW_IMAGE,SITE_ADDRESS,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          script: |
+            set -euo pipefail
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker pull "$WWW_IMAGE"
+            chmod +x /var/www/www-standalone/docker/activate-release-docker.sh
+            bash /var/www/www-standalone/docker/activate-release-docker.sh "$WWW_IMAGE" "$SITE_ADDRESS"
+            docker logout
+        env:
+          WWW_IMAGE: ${{ env.WWW_IMAGE }}
+          SITE_ADDRESS: ${{ vars.EC2_STANDALONE_SITE_ADDRESS }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Smoke test (public URL)
+        env:
+          DEPLOY_BASE_URL: ${{ vars.EC2_STANDALONE_BASE_URL }}
+        run: |
+          export DEPLOY_BASE_URL="${DEPLOY_BASE_URL:?Set variable EC2_STANDALONE_BASE_URL}"
+          bash deploy/smoke-test.sh

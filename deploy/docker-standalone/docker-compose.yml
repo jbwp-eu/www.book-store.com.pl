@@ -1,0 +1,46 @@
+# www + Caddy on a dedicated EC2 (no nest, no external book-store network).
+# Layout on server:
+#   /var/www/www-standalone/docker/   ← this compose + Caddyfile + activate script
+#
+# SITE_ADDRESS — Caddy site block:
+#   domain (e.g. www.book-store.pl) → automatic HTTPS (Let's Encrypt)
+#   :80 → HTTP only (handy for IP smoke tests before DNS)
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: www-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-:80}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - www-standalone
+    depends_on:
+      - www
+    restart: unless-stopped
+
+  www:
+    image: ${WWW_IMAGE:-www-book-store:latest}
+    container_name: www
+    environment:
+      NODE_ENV: production
+      HOST: "0.0.0.0"
+      PORT: "3000"
+    networks:
+      - www-standalone
+    restart: unless-stopped
+
+networks:
+  www-standalone:
+    name: www-standalone
+
+volumes:
+  caddy_data:
+  caddy_config:

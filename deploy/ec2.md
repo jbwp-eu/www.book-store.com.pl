@@ -6,7 +6,8 @@ i Compose w sieci `book-store`. Caddy nest: `reverse_proxy www:3000`.
 Workflow: `.github/workflows/deploy-ec2.yml` → **Deploy to EC2 (Docker)**  
 (`workflow_dispatch` na `main`).
 
-OVH nadal: systemd + `deploy-ovh.yml` (osobna ścieżka).
+OVH nadal: systemd + `deploy-ovh.yml` (osobna ścieżka).  
+Osobna EC2 z Caddy w Dockerze (bez nest): `deploy/ec2-standalone.md` + `deploy-ec2-standalone.yml`.
 
 ## Architektura
 
