@@ -10,6 +10,8 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import Navbar from "./components/Navbar";
+import NavigationProgress from "./components/NavigationProgress";
+import { SITE_DESCRIPTION, SITE_NAME } from "~/lib/site";
 
 export const links: Route.LinksFunction = () => [
   {
@@ -31,8 +33,8 @@ export const links: Route.LinksFunction = () => [
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "My Portfolio" },
-    { name: "description", content: "Custom website development" },
+    { title: SITE_NAME },
+    { name: "description", content: SITE_DESCRIPTION },
   ];
 }
 
@@ -46,6 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <NavigationProgress />
         <Navbar />
         <main>{children}</main>
         <ScrollRestoration />

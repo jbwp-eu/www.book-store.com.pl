@@ -1,7 +1,8 @@
 # CD: Docker Compose on the same EC2 as nest.book-store.pl
 # Bootstrap: deploy/ec2.md
-# Secrets: EC2_HOST, EC2_SSH_KEY, DOCKERHUB_USERNAME, DOCKERHUB_TOKEN
-# Variables: EC2_DEPLOY_BASE_URL, opcjonalnie VITE_API_URL, DOCKERHUB_IMAGE
+# Secrets: EC2_HOST, EC2_SSH_KEY, DOCKERHUB_USERNAME, DOCKERHUB_TOKEN,
+#          opcjonalnie FORMSPREE_URL (contact form, server-only)
+# Variables: EC2_DEPLOY_BASE_URL, opcjonalnie VITE_API_URL, DOCKERHUB_IMAGE, SITE_URL
 #
 # Build → push to Docker Hub → EC2 docker pull → compose up.
 # Nest Caddy reverse_proxies www.book-store.pl → www:3000.
@@ -72,18 +73,21 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ env.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: WWW_IMAGE,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          envs: WWW_IMAGE,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,FORMSPREE_URL,SITE_URL
           script: |
             set -euo pipefail
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker pull "$WWW_IMAGE"
             chmod +x /var/www/www/docker/activate-release-docker.sh
+            SITE_URL="${SITE_URL:-}"
             bash /var/www/www/docker/activate-release-docker.sh "$WWW_IMAGE"
             docker logout
         env:
           WWW_IMAGE: ${{ env.WWW_IMAGE }}
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          FORMSPREE_URL: ${{ secrets.FORMSPREE_URL }}
+          SITE_URL: ${{ vars.SITE_URL }}
 
       - name: Smoke test (public URL)
         env:

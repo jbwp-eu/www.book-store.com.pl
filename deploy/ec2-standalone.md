@@ -27,7 +27,7 @@ EC2 (standalone)
     ├── docker-compose.yml
     ├── Caddyfile
     ├── activate-release-docker.sh
-    └── .env          # WWW_IMAGE=...  SITE_ADDRESS=...
+    └── .env          # WWW_IMAGE=...  SITE_ADDRESS=...  (+ FORMSPREE_URL, SITE_URL from deploy)
 ```
 
 ## Bootstrap (jednorazowo)
@@ -94,6 +94,7 @@ GitHub → **Deploy to EC2 standalone (Docker + Caddy)** → Run workflow.
 | `EC2_STANDALONE_SSH_KEY` | private klucz deploy (bez passphrase) |
 | `DOCKERHUB_USERNAME`     | login Docker Hub (może być wspólny)   |
 | `DOCKERHUB_TOKEN`        | access token Docker Hub               |
+| `FORMSPREE_URL`          | opcjonalnie — endpoint Formspree (contact, runtime) |
 
 **Variables:**
 
@@ -103,6 +104,7 @@ GitHub → **Deploy to EC2 standalone (Docker + Caddy)** → Run workflow.
 | `EC2_STANDALONE_SITE_ADDRESS` | domena Caddy **albo** `:80` (HTTP only)                     |
 | `VITE_API_URL`                | opcjonalnie (jak w prod)                                    |
 | `DOCKERHUB_IMAGE`             | opcjonalnie, default: `<DOCKERHUB_USERNAME>/www-book-store` |
+| `SITE_URL`                    | opcjonalnie — kanoniczny origin (sitemap/robots)            |
 
 SSH: port **22**, user `ubuntu`.
 

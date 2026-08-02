@@ -33,6 +33,8 @@ services:
       NODE_ENV: production
       HOST: "0.0.0.0"
       PORT: "3000"
+      FORMSPREE_URL: ${FORMSPREE_URL:-}
+      SITE_URL: ${SITE_URL:-}
     networks:
       - www-standalone
     restart: unless-stopped

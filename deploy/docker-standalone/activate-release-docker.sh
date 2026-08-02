@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Run on EC2 as ubuntu after Docker Hub pull (or image already present).
 # Usage: activate-release-docker.sh <www-image-ref> [site-address]
-# Example: activate-release-docker.sh myuser/www-book-store:abc1234 test.book-store.pl
-#          activate-release-docker.sh myuser/www-book-store:abc1234 :80
+# Optional env: FORMSPREE_URL, SITE_URL (written into .env for compose)
 set -euo pipefail
 
 DOCKER_DIR=/var/www/www-standalone/docker
@@ -16,6 +15,12 @@ cd "$DOCKER_DIR"
 {
   printf 'WWW_IMAGE=%s\n' "$WWW_IMAGE"
   printf 'SITE_ADDRESS=%s\n' "$SITE_ADDRESS"
+  if [[ -n "${FORMSPREE_URL:-}" ]]; then
+    printf 'FORMSPREE_URL=%s\n' "$FORMSPREE_URL"
+  fi
+  if [[ -n "${SITE_URL:-}" ]]; then
+    printf 'SITE_URL=%s\n' "$SITE_URL"
+  fi
 } > .env
 
 docker compose pull www

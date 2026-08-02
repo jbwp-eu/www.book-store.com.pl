@@ -1,4 +1,12 @@
-import React from "react";
+import type { Route } from "./+types";
+import { pageTitle, SITE_DESCRIPTION } from "~/lib/site";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: pageTitle("About") },
+    { name: "description", content: SITE_DESCRIPTION },
+  ];
+}
 
 const AboutPage = () => {
   return (
@@ -12,17 +20,20 @@ const AboutPage = () => {
         />
         <div>
           <h1 className="text-3xl font-bold text-white mb-2">
-            Hey, I'm Jarek 👋
+            Hey, I'm Jarek <span aria-hidden="true">👋</span>
           </h1>
           <p className="text-gray-300 text-lg">
-            I'm a passionate web developer who loves building user-friendly
-            digital experiences.
+            I'm a full-stack developer focused on e-commerce: storefronts,
+            REST and GraphQL APIs, Strapi CMS, and deploying shop stacks to the
+            cloud.
           </p>
         </div>
       </div>
 
       {/* Tech Stack */}
-      <h2 className="text-2xl font-semibold text-white mb-4">🚀 Tech I Use</h2>
+      <h2 className="text-2xl font-semibold text-white mb-4">
+        <span aria-hidden="true">🚀 </span>Tech I Use
+      </h2>
       <ul className="flex flex-wrap gap-4 text-sm text-gray-300">
         {[
           "HTML",

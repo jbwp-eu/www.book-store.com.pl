@@ -6,7 +6,7 @@ const HomeLayout = () => {
     <>
       <Hero
         name="Jarek"
-        text="I am a full-stack developer and can create amazing web applications "
+        text="I build full-stack web apps with a focus on online stores — APIs, CMS, and commerce backends."
       />
       <section className="max-w-6xl mx-auto px-6 my-8">
         <Outlet />

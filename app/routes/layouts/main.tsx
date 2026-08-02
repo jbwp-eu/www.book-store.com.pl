@@ -1,10 +1,11 @@
 import { Outlet } from "react-router";
-import type { Route } from "../about/+types";
+import type { Route } from "./+types/main";
+import { SITE_DESCRIPTION, SITE_NAME } from "~/lib/site";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "My Portfolio" },
-    { name: "description", content: "Custom website development" },
+    { title: SITE_NAME },
+    { name: "description", content: SITE_DESCRIPTION },
   ];
 }
 

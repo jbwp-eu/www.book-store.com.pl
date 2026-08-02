@@ -15,17 +15,23 @@ A personal portfolio frontend built with **React 19** and **React Router v7** in
 npm install
 ```
 
-Create a `.env` file in the project directory:
+Create a `.env` file in the project directory (see `.env.example`):
 
 ```env
 VITE_API_URL="http://localhost:1337/api"
+FORMSPREE_URL="https://formspree.io/f/mojvppgn"
+SITE_URL="http://localhost:5173"
 ```
 
 For production Strapi:
 
 ```env
 VITE_API_URL="https://strapi.book-store.com.pl/api"
+FORMSPREE_URL="https://formspree.io/f/mojvppgn"
+SITE_URL="https://www.book-store.com.pl"
 ```
+
+`VITE_API_URL` is baked in at `npm run build`. `FORMSPREE_URL` and `SITE_URL` are read only on the server (contact / sitemap / robots) — do not use the `VITE_` prefix. `SITE_URL` defaults to production in `app/lib/site.server.ts`.
 
 Development server (HMR):
 
@@ -43,6 +49,7 @@ App: [http://localhost:5173](http://localhost:5173)
 | `npm run build` | production build |
 | `npm run start` | serve the build (`react-router-serve`) |
 | `npm run typecheck` | React Router typegen + `tsc` |
+| `npm test` | unit tests (Vitest) |
 
 ## Routes
 
@@ -53,10 +60,18 @@ App: [http://localhost:5173](http://localhost:5173)
 | `/contact` | contact |
 | `/projects` | project list |
 | `/projects/:id` | project details |
-| `/blog` | post list |
+| `/blog` | post list (search: `?q=`) |
 | `/blog/:slug` | post details |
+| `/robots.txt` | crawler rules |
+| `/sitemap.xml` | sitemap (static pages + Strapi) |
 
 Data is fetched from Strapi endpoints: `/projects`, `/posts`.
+
+## CI
+
+Workflow `.github/workflows/ci.yml` (PR / push to `main`): `typecheck`, `test`, `build`.
+
+To require a green CI before merging to `main`: GitHub → **Settings** → **Branches** → **Add branch protection rule** → Branch name pattern `main` → enable **Require status checks to pass before merging** and select the **CI** check (job from `ci.yml`).
 
 ## Production build
 

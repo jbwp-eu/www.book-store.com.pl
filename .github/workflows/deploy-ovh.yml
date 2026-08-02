@@ -1,7 +1,7 @@
 # CD: deploy to OVH VPS (manual workflow_dispatch on main).
 # Server bootstrap + klucz deploy: deploy/ovh.md
-# GitHub Secrets: OVH_HOST, OVH_SSH_KEY (private deploy key, bez passphrase)
-# GitHub Variables: OVH_DEPLOY_BASE_URL (https://www.book-store.com.pl), opcjonalnie VITE_API_URL
+# GitHub Secrets: OVH_HOST, OVH_SSH_KEY, opcjonalnie FORMSPREE_URL (contact form)
+# GitHub Variables: OVH_DEPLOY_BASE_URL, opcjonalnie VITE_API_URL, SITE_URL
 name: Deploy to OVH VPS
 
 on:
@@ -71,8 +71,15 @@ jobs:
           port: ${{ env.OVH_SSH_PORT }}
           username: ${{ env.OVH_USER }}
           key: ${{ secrets.OVH_SSH_KEY }}
+          envs: FORMSPREE_URL,RELEASE_SHA,SITE_URL
           script: |
-            bash /var/www/www/releases/${{ env.RELEASE_SHA }}/deploy/activate-release.sh ${{ env.RELEASE_SHA }}
+            set -euo pipefail
+            SITE_URL="${SITE_URL:-}"
+            bash /var/www/www/releases/${RELEASE_SHA}/deploy/activate-release.sh "${RELEASE_SHA}"
+        env:
+          FORMSPREE_URL: ${{ secrets.FORMSPREE_URL }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          RELEASE_SHA: ${{ env.RELEASE_SHA }}
 
       - name: Smoke test (public URL)
         env:

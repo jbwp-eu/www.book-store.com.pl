@@ -20,6 +20,7 @@ FROM node:22-alpine
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3000
+# Runtime (optional): docker run -e FORMSPREE_URL=... -e SITE_URL=https://...
 COPY ./package.json package-lock.json /app/
 COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/build /app/build

@@ -25,8 +25,18 @@ export type Post = {
   body: string;
 };
 
+export type StrapiPagination = {
+  page: number;
+  pageSize: number;
+  pageCount: number;
+  total: number;
+};
+
 export type StrapiResponse<T> = {
   data: T[];
+  meta?: {
+    pagination?: StrapiPagination;
+  };
 };
 
 export type StrapiProject = {

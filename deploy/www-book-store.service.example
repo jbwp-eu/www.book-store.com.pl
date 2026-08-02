@@ -9,6 +9,8 @@ Group=ubuntu
 WorkingDirectory=/var/www/www/current
 Environment=NODE_ENV=production
 Environment=PORT=3000
+# "-" = ignore if missing (bootstrap before first FORMSPREE_URL deploy)
+EnvironmentFile=-/var/www/www/shared/.env
 ExecStart=/usr/bin/npm run start
 Restart=always
 RestartSec=5

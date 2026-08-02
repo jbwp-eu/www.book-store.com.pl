@@ -1,82 +1,80 @@
 import type { Route } from "./+types";
-import { type Post, type StrapiPost, type StrapiResponse } from "~/types";
 import PostCard from "~/components/PostCard";
 import Pagination from "~/components/Pagination";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PostFilter from "~/components/PostFilter";
+import { useNavigate, useSearchParams } from "react-router";
+import { getPostsPage } from "~/lib/strapi";
+import { pageTitle } from "~/lib/site";
 
-const { VITE_API_URL } = import.meta.env;
+export function meta({}: Route.MetaArgs) {
+  const description =
+    "Notes on full-stack development, stores, APIs, and CMS.";
+  return [
+    { title: pageTitle("Blog") },
+    { name: "description", content: description },
+    { property: "og:title", content: pageTitle("Blog") },
+    { property: "og:description", content: description },
+  ];
+}
 
-export async function loader({
-  request,
-}: Route.LoaderArgs): Promise<{ posts: Post[] }> {
-  const res = await fetch(
-    `${VITE_API_URL}/posts?populate=image&sort=date:desc`,
-  );
-  if (!res.ok) throw new Error("Failed to fetch data");
-  const json: StrapiResponse<StrapiPost> = await res.json();
-  const posts = json.data.map((item: StrapiPost) => ({
-    id: item.documentId,
-    title: item.title,
-    slug: item.slug,
-    excerpt: item.excerpt,
-    date: item.date,
-    body: item.body,
-    image: item.image?.url ? `${item.image.url}` : "/images/no-image.png",
-  }));
-
-  return { posts };
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const page = Math.max(1, Number(url.searchParams.get("page") ?? 1) || 1);
+  const q = url.searchParams.get("q")?.trim() ?? "";
+  const { posts, pageCount } = await getPostsPage(page, 2, q);
+  return { posts, page, pageCount, q };
 }
 
 const BlogPage = ({ loaderData }: Route.ComponentProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const { posts, page, pageCount, q } = loaderData;
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(q);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+    setSearchQuery(q);
+  }, [q]);
 
-  const postsPerPage = 2;
+  useEffect(() => {
+    const trimmed = searchQuery.trim();
+    if (trimmed === q) return;
 
-  const { posts } = loaderData;
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams(searchParams);
+      if (trimmed) params.set("q", trimmed);
+      else params.delete("q");
+      params.delete("page");
+      navigate(`?${params.toString()}`);
+    }, 300);
 
-  const filteredPosts = posts.filter((post) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      post.title.toLowerCase().includes(query) ||
-      post.excerpt.toLowerCase().includes(query)
-    );
-  });
-
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-
-  const indexOfLast = currentPage * postsPerPage;
-
-  const indexOfFirst = indexOfLast - postsPerPage;
-
-  const currentPosts = filteredPosts.slice(indexOfFirst, indexOfLast);
+    return () => clearTimeout(timer);
+  }, [searchQuery, q, navigate, searchParams]);
 
   return (
     <>
       <div className="max-w-3xl mx-auto mt-10 px-6 py-6 bg-gray-900">
-        <h2 className="text-3xl text-white font-bold mb-4">✏️ Blog</h2>
-        <PostFilter
-          searchQuery={searchQuery}
-          onSearchChange={(query) => {
-            setSearchQuery(query);
-            setCurrentPage(1);
-          }}
-        />
+        <h2 className="text-3xl text-white font-bold mb-4">
+          <span aria-hidden="true">✏️ </span>Blog
+        </h2>
+        <PostFilter searchQuery={searchQuery} onSearchChange={setSearchQuery} />
         <div className="space-y-8">
-          {currentPosts.length === 0 ? (
+          {posts.length === 0 ? (
             <p className="text-gray-400 text-center">No posts found</p>
           ) : (
-            currentPosts.map((post) => <PostCard key={post.slug} post={post} />)
+            posts.map((post) => <PostCard key={post.slug} post={post} />)
           )}
         </div>
       </div>
-      {totalPages > 1 && (
+      {pageCount > 1 && (
         <Pagination
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          currentPage={currentPage}
+          totalPages={pageCount}
+          onPageChange={(next) => {
+            const params = new URLSearchParams(searchParams);
+            params.set("page", String(next));
+            navigate(`?${params.toString()}`);
+          }}
+          currentPage={page}
         />
       )}
     </>

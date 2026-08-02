@@ -1,8 +1,9 @@
 # CD: www + Caddy (Docker) on a dedicated test EC2 — no nest.
 # Bootstrap: deploy/ec2-standalone.md
-# Secrets: EC2_STANDALONE_HOST, EC2_STANDALONE_SSH_KEY, DOCKERHUB_USERNAME, DOCKERHUB_TOKEN
+# Secrets: EC2_STANDALONE_HOST, EC2_STANDALONE_SSH_KEY, DOCKERHUB_USERNAME, DOCKERHUB_TOKEN,
+#          opcjonalnie FORMSPREE_URL (contact form, server-only)
 # Variables: EC2_STANDALONE_BASE_URL, EC2_STANDALONE_SITE_ADDRESS,
-#            opcjonalnie VITE_API_URL, DOCKERHUB_IMAGE
+#            opcjonalnie VITE_API_URL, DOCKERHUB_IMAGE, SITE_URL
 #
 # Build → push to Docker Hub → EC2 docker pull → compose up (caddy + www).
 name: Deploy to EC2 standalone (Docker + Caddy)
@@ -72,12 +73,13 @@ jobs:
           host: ${{ secrets.EC2_STANDALONE_HOST }}
           username: ${{ env.EC2_USER }}
           key: ${{ secrets.EC2_STANDALONE_SSH_KEY }}
-          envs: WWW_IMAGE,SITE_ADDRESS,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          envs: WWW_IMAGE,SITE_ADDRESS,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,FORMSPREE_URL,SITE_URL
           script: |
             set -euo pipefail
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker pull "$WWW_IMAGE"
             chmod +x /var/www/www-standalone/docker/activate-release-docker.sh
+            SITE_URL="${SITE_URL:-}"
             bash /var/www/www-standalone/docker/activate-release-docker.sh "$WWW_IMAGE" "$SITE_ADDRESS"
             docker logout
         env:
@@ -85,6 +87,8 @@ jobs:
           SITE_ADDRESS: ${{ vars.EC2_STANDALONE_SITE_ADDRESS }}
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          FORMSPREE_URL: ${{ secrets.FORMSPREE_URL }}
+          SITE_URL: ${{ vars.SITE_URL }}
 
       - name: Smoke test (public URL)
         env:

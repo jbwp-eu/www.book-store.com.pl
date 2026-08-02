@@ -39,7 +39,7 @@ www.book-store.pl {
 └── docker/
     ├── docker-compose.yml
     ├── activate-release-docker.sh
-    └── .env          # WWW_IMAGE=user/www-book-store:<sha>
+    └── .env          # WWW_IMAGE=... (+ FORMSPREE_URL, SITE_URL from deploy)
 ```
 
 ## Bootstrap (jednorazowo)
@@ -78,6 +78,7 @@ GitHub → **Deploy to EC2 (Docker)** → branch **main** → Run workflow.
 | `EC2_SSH_KEY`        | private klucz deploy (bez passphrase)             |
 | `DOCKERHUB_USERNAME` | login Docker Hub                                  |
 | `DOCKERHUB_TOKEN`    | access token Docker Hub (nie hasło konta)         |
+| `FORMSPREE_URL`      | opcjonalnie — endpoint Formspree (contact, runtime) |
 
 **Variables:**
 
@@ -86,6 +87,7 @@ GitHub → **Deploy to EC2 (Docker)** → branch **main** → Run workflow.
 | `EC2_DEPLOY_BASE_URL` | `https://www.book-store.pl`                                             |
 | `VITE_API_URL`        | `https://strapi.book-store.com.pl/api` (opcjonalnie)                    |
 | `DOCKERHUB_IMAGE`     | opcjonalnie, default: `<DOCKERHUB_USERNAME>/www-book-store`             |
+| `SITE_URL`            | opcjonalnie — kanoniczny origin (sitemap/robots); default w app         |
 
 Tagi pushowane: `:<git-sha>` oraz `:latest`.
 

@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { formatDate } from "~/lib/date";
 import type { Project } from "~/types";
 
 const ProjectCard = ({ project }: { project: Project }) => {
@@ -11,7 +12,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
         <img
           src={project?.image ? `${project.image}` : "/images/no-image.png"}
           alt={project.title}
-          className="w-full h-50 object-contain py-4 bg-white"
+          className="w-full h-52 object-contain py-4 bg-white"
         />
         <div className="p-5">
           <h3 className="text-3xl font-semibold text-blue-400">
@@ -19,9 +20,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
           </h3>
           <div className="flex justify-between items-center text-sm text-gray-400">
             <span>{project.category}</span>
-            <span suppressHydrationWarning>
-              {new Date(project.date).toLocaleString()}
-            </span>
+            <span>{formatDate(project.date)}</span>
           </div>
         </div>
       </div>

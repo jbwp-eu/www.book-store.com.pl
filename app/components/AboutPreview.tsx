@@ -9,10 +9,10 @@ const AboutPreview = () => {
         className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 shadow-md"
       />
       <div>
-        <div className="h2 text-2xl font-bold text-white mb-2">👋 About Me</div>
+        <h2 className="text-2xl font-bold text-white mb-2">About Me</h2>
         <p className="text-gray-200 mb-4 max-w-4xl">
-          My name is Jarek — I'm a self-taught programmer with a passion for
-          creating user-friendly digital experiences.
+          My name is Jarek — I build user-friendly digital products, especially
+          online stores and the APIs and CMS that power them.
         </p>
         <Link
           to="/about"

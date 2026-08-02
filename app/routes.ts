@@ -6,6 +6,8 @@ import {
 } from "@react-router/dev/routes";
 
 export default [
+  route("robots.txt", "./routes/seo/robots.ts"),
+  route("sitemap.xml", "./routes/seo/sitemap.ts"),
   layout("./routes/layouts/home.tsx", [index("routes/home/index.tsx")]),
   layout("./routes/layouts/main.tsx", [
     route("about", "./routes/about/index.tsx"),

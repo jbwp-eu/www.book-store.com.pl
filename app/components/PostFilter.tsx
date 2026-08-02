@@ -6,7 +6,11 @@ type PostFilterProps = {
 const PostFilter = ({ searchQuery, onSearchChange }: PostFilterProps) => {
   return (
     <div className="mb-6">
+      <label htmlFor="post-search" className="sr-only">
+        Search posts
+      </label>
       <input
+        id="post-search"
         type="text"
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}

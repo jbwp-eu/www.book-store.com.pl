@@ -15,17 +15,23 @@ Frontend osobistego portfolio zbudowany w **React 19** i **React Router v7** w t
 npm install
 ```
 
-Utwórz plik `.env` w katalogu projektu:
+Utwórz plik `.env` w katalogu projektu (wzór: `.env.example`):
 
 ```env
 VITE_API_URL="http://localhost:1337/api"
+FORMSPREE_URL="https://formspree.io/f/mojvppgn"
+SITE_URL="http://localhost:5173"
 ```
 
 Dla produkcji Strapi:
 
 ```env
 VITE_API_URL="https://strapi.book-store.com.pl/api"
+FORMSPREE_URL="https://formspree.io/f/mojvppgn"
+SITE_URL="https://www.book-store.com.pl"
 ```
+
+`VITE_API_URL` jest wbudowywane przy `npm run build`. `FORMSPREE_URL` i `SITE_URL` są odczytywane tylko na serwerze (kontakt / sitemap / robots) — bez prefiksu `VITE_`. `SITE_URL` ma default produkcyjny w `app/lib/site.server.ts`.
 
 Uruchomienie deweloperskie (HMR):
 
@@ -43,6 +49,7 @@ Aplikacja: [http://localhost:5173](http://localhost:5173)
 | `npm run build` | build produkcyjny |
 | `npm run start` | serwowanie builda (`react-router-serve`) |
 | `npm run typecheck` | typegen React Router + `tsc` |
+| `npm test` | testy jednostkowe (Vitest) |
 
 ## Trasy
 
@@ -53,10 +60,18 @@ Aplikacja: [http://localhost:5173](http://localhost:5173)
 | `/contact` | kontakt |
 | `/projects` | lista projektów |
 | `/projects/:id` | szczegóły projektu |
-| `/blog` | lista postów |
+| `/blog` | lista postów (wyszukiwanie: `?q=`) |
 | `/blog/:slug` | szczegóły posta |
+| `/robots.txt` | reguły crawlerów |
+| `/sitemap.xml` | mapa strony (statyczne + Strapi) |
 
 Dane pobierane są z endpointów Strapi: `/projects`, `/posts`.
+
+## CI
+
+Workflow `.github/workflows/ci.yml` (PR / push na `main`): `typecheck`, `test`, `build`.
+
+Aby wymagać zielonego CI przed merge do `main`: GitHub → **Settings** → **Branches** → **Add branch protection rule** → Branch name pattern `main` → włącz **Require status checks to pass before merging** i wybierz check **CI** (job z `ci.yml`).
 
 ## Build produkcyjny
 

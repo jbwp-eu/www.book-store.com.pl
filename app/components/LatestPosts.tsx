@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { formatDate } from "~/lib/date";
 import type { Post } from "~/types";
 
 type LatestPostsProps = {
@@ -6,7 +7,7 @@ type LatestPostsProps = {
   limit?: number;
 };
 
-const LatestsPosts = ({ posts, limit = 3 }: LatestPostsProps) => {
+const LatestPosts = ({ posts, limit = 3 }: LatestPostsProps) => {
   const sorted = [...posts].sort((a: Post, b: Post) => {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
@@ -15,7 +16,9 @@ const LatestsPosts = ({ posts, limit = 3 }: LatestPostsProps) => {
 
   return (
     <section className="max-w-6xl mx-auto px-6 py-12">
-      <h2 className="text-2xl font-bold mb-6 text-black">📩 Latest Posts</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white">
+        <span aria-hidden="true">📩 </span>Latest Posts
+      </h2>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {latest.map((post) => (
           <Link
@@ -27,7 +30,7 @@ const LatestsPosts = ({ posts, limit = 3 }: LatestPostsProps) => {
               {post.title}
             </h3>
             <p className="text-sm text-gray-300">{post.excerpt}</p>
-            <span suppressHydrationWarning>{new Date(post.date).toDateString()}</span>
+            <span>{formatDate(post.date)}</span>
           </Link>
         ))}
       </div>
@@ -35,4 +38,4 @@ const LatestsPosts = ({ posts, limit = 3 }: LatestPostsProps) => {
   );
 };
 
-export default LatestsPosts;
+export default LatestPosts;

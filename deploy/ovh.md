@@ -9,6 +9,8 @@ Workflow: `.github/workflows/deploy-ovh.yml` (ręcznie `workflow_dispatch` na `m
 ```
 /var/www/www/
 ├── current -> releases/<sha>/
+├── shared/
+│   └── .env          # FORMSPREE_URL, SITE_URL (z GitHub, aktualizowane przy activate)
 ├── releases/
 │   └── <sha>/
 │       ├── package.json
@@ -35,12 +37,15 @@ i uruchom workflow **ponownie**.
 sudo cp /var/www/www/current/deploy/www-book-store.service.example \
   /etc/systemd/system/www-book-store.service
 # (jeśli current jeszcze nie ma symlinku: użyj pełnej ścieżki releases/<sha>/deploy/...)
+# Unit ładuje EnvironmentFile=-/var/www/www/shared/.env (FORMSPREE_URL, SITE_URL z deploy).
 sudo systemctl daemon-reload
 sudo systemctl enable --now www-book-store
 
 # sudoers: ubuntu może restartować usługę
 # ubuntu ALL=(ALL) NOPASSWD: /bin/systemctl restart www-book-store
 ```
+
+Jeśli unit był instalowany wcześniej **bez** `EnvironmentFile`, zaktualizuj go z `www-book-store.service.example` i `daemon-reload` — inaczej `FORMSPREE_URL` / `SITE_URL` z `shared/.env` nie trafią do procesu.
 
 Reverse proxy (NGINX/Caddy): `www.book-store.com.pl` → `127.0.0.1:3000`.
 
@@ -50,10 +55,11 @@ Po systemd + proxy + sudoers: drugi raz **Run workflow** — activate ustawi `cu
 
 **Secrets** (te same co nest, ten sam VPS):
 
-| Secret        | Opis                                  |
-| ------------- | ------------------------------------- |
-| `OVH_HOST`    | IP lub hostname VPS                   |
-| `OVH_SSH_KEY` | private klucz deploy (bez passphrase) |
+| Secret           | Opis                                              |
+| ---------------- | ------------------------------------------------- |
+| `OVH_HOST`       | IP lub hostname VPS                               |
+| `OVH_SSH_KEY`    | private klucz deploy (bez passphrase)             |
+| `FORMSPREE_URL`  | opcjonalnie — endpoint Formspree (contact, runtime) |
 
 **Variables:**
 
@@ -61,5 +67,6 @@ Po systemd + proxy + sudoers: drugi raz **Run workflow** — activate ustawi `cu
 | --------------------- | ----------------------------------------------------------------------------- |
 | `OVH_DEPLOY_BASE_URL` | `https://www.book-store.com.pl`                                               |
 | `VITE_API_URL`        | `https://strapi.book-store.com.pl/api` (opcjonalnie; jest default w workflow) |
+| `SITE_URL`            | opcjonalnie — kanoniczny origin (sitemap/robots); default w `site.server.ts`  |
 
 SSH: port **49152**, user `ubuntu` — jak w nest.

@@ -5,12 +5,18 @@ set -euo pipefail
 BASE="${DEPLOY_BASE_URL:-https://www.book-store.com.pl}"
 BASE="${BASE%/}"
 
-echo "==> GET $BASE/"
-curl -sfS -o /dev/null "$BASE/"
-echo " OK"
+check() {
+  local path="$1"
+  echo "==> GET $BASE$path"
+  curl -sfS -o /dev/null "$BASE$path"
+  echo " OK"
+}
 
-echo "==> GET $BASE/about"
-curl -sfS -o /dev/null "$BASE/about"
-echo " OK"
+check "/"
+check "/about"
+check "/blog"
+check "/projects"
+check "/robots.txt"
+check "/sitemap.xml"
 
 echo "All smoke checks passed for $BASE"
